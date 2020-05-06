@@ -13,5 +13,7 @@ clean_df.drop(class_df.iloc[:, 0:12], inplace = True, axis = 1)
 # Merge the cleaned up classification file with the reconciled data
 df_merge_col = pd.merge(clean_df, reconcile_df, left_on='subject_ids', right_on='subject_id')
 
+df_merge_col.drop(df_merge_col.iloc[:, 1:3], inplace = True, axis = 1)
+
 # write new csv
 df_merge_col.to_csv('new.csv', index=False)
