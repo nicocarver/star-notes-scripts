@@ -52,5 +52,9 @@ df_merge_col = df_merge_col.drop_duplicates()
 # delete subject_id and subject_data columns
 df_merge_col.drop(['subject_id','subject_ids','subject_data'], inplace = True, axis = 1)
 
+# cosmetic changes
+df_merge_col['annotations'] = df_merge_col.annotations.str.upper()
+df_merge_col.rename(columns={'annotations':'plate_numbers'}, inplace=True)
+
 # write new csv
 df_merge_col.to_csv('new.csv', index=False)
