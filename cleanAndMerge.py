@@ -56,5 +56,9 @@ df_merge_col.drop(['subject_id','subject_ids','subject_data'], inplace = True, a
 df_merge_col['annotations'] = df_merge_col.annotations.str.upper()
 df_merge_col.rename(columns={'annotations':'plate_numbers'}, inplace=True)
 
+# options to remove blanks and * rows
+df_merge_col.dropna(axis = 0, how = 'any', inplace = True)
+df_merge_col = df_merge_col[~df_merge_col.plate_numbers.str.contains("\*")]
+
 # write new csv
 df_merge_col.to_csv('new.csv', index=False)
