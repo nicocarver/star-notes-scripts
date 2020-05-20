@@ -3,10 +3,10 @@ import pandas as pd
 
 # Read in the classifications and reconciled CSV. Change these file names
 class_df = pd.read_csv("star-notes-classifications.csv")
-reconcile_df = pd.read_csv("fleming_1st_month_reconciled_5.28.csv")
+reconcile_df = pd.read_csv("fleming_1st_month_reconciled_5.31.csv")
 
 # subset the data based on workflow. Change this to agree with the reconciled file above
-clean_df = class_df.loc[(class_df.workflow_id == 12765) & (class_df.workflow_version == 5.28)].copy()
+clean_df = class_df.loc[(class_df.workflow_id == 12765) & (class_df.workflow_version == 5.31)].copy()
 
 # Don't change anything below this line
 
@@ -28,9 +28,9 @@ clean_df['subject_data'] = clean_df.subject_data.str.replace('}' , '')
 clean_df.drop(class_df.iloc[:, 0:12], inplace = True, axis = 1)
 
 # pull out Phaedra info into seperate data frames
-df_url = clean_df.subject_data.str.split(",").str[-4]
-df_img_id = clean_df.subject_data.str.split(",").str[-3]
-df_item_id = clean_df.subject_data.str.split(",").str[-2]
+df_url = clean_df.subject_data.str.split(",").str[-6]
+df_img_id = clean_df.subject_data.str.split(",").str[-5]
+df_item_id = clean_df.subject_data.str.split(",").str[-4]
 df_page_sequence = clean_df.subject_data.str.split(",").str[-1]
 
 # remove unnecessary values
@@ -52,13 +52,16 @@ df_merge_col = df_merge_col.drop_duplicates()
 # delete subject_id and subject_data columns
 df_merge_col.drop(['subject_id','subject_ids','subject_data'], inplace = True, axis = 1)
 
-# cosmetic changes
-df_merge_col['annotations'] = df_merge_col.annotations.str.upper()
-df_merge_col.rename(columns={'annotations':'plate_numbers'}, inplace=True)
-
 # options to remove blanks and * rows
 df_merge_col.dropna(axis = 0, how = 'any', inplace = True)
-df_merge_col = df_merge_col[~df_merge_col.plate_numbers.str.contains("\*")]
+df_merge_col = df_merge_col[~df_merge_col.annotations.str.contains("\*")]
+
+# cosmetic changes
+df_merge_col['annotations'] = df_merge_col.annotations.str.lower()
+df_merge_col['annotations'] = df_merge_col['annotations'].apply(lambda s: ', '.join(set(s.split(', '))))
+df_merge_col['annotations'] = df_merge_col['annotations'].str.replace(' ', '')
+df_merge_col['annotations'] = df_merge_col['annotations'].str.replace('plate', '')
+df_merge_col.rename(columns={'annotations':'plate_numbers'}, inplace=True)
 
 # write new csv
 df_merge_col.to_csv('new.csv', index=False)
