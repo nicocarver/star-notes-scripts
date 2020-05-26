@@ -6,12 +6,15 @@ class_df = pd.read_csv("star-notes-classifications.csv")
 reconcile_df = pd.read_csv("fleming_1st_month_reconciled_5.31.csv")
 
 # subset the data based on workflow. Change this to agree with the reconciled file above
-clean_df = class_df.loc[(class_df.workflow_id == 12765) & (class_df.workflow_version == 5.31)].copy()
+clean_df = class_df.loc[(class_df.workflow_version == 5.31)].copy()
 
 # Don't change anything below this line
 
 # drop duplicate column from reconciled csv
 reconcile_df = reconcile_df.drop(reconcile_df.columns[1], axis=1)
+
+# everything lowercase
+reconcile_df['annotations'] = reconcile_df.annotations.str.lower()
 
 # remove formatting
 reconcile_df['annotations'] = reconcile_df.annotations.str.replace('\'','')
@@ -52,16 +55,18 @@ df_merge_col = df_merge_col.drop_duplicates()
 # delete subject_id and subject_data columns
 df_merge_col.drop(['subject_id','subject_ids','subject_data'], inplace = True, axis = 1)
 
-# options to remove blanks and * rows
+# remove blank rows
 df_merge_col.dropna(axis = 0, how = 'any', inplace = True)
-df_merge_col = df_merge_col[~df_merge_col.annotations.str.contains("\*")]
+# seperate messy rows
+df_merge_clean = df_merge_col[~df_merge_col.annotations.str.contains("\*|\d*\/|kg", na=False)].copy()
+df_messy = df_merge_col[~df_merge_col.apply(tuple,1).isin(df_merge_clean.apply(tuple,1))]
 
 # cosmetic changes
-df_merge_col['annotations'] = df_merge_col.annotations.str.lower()
-df_merge_col['annotations'] = df_merge_col['annotations'].apply(lambda s: ', '.join(set(s.split(', '))))
-df_merge_col['annotations'] = df_merge_col['annotations'].str.replace(' ', '')
-df_merge_col['annotations'] = df_merge_col['annotations'].str.replace('plate', '')
-df_merge_col.rename(columns={'annotations':'plate_numbers'}, inplace=True)
+df_merge_clean['annotations'] = df_merge_clean['annotations'].apply(lambda s: ', '.join(set(s.split(', '))))
+df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace(' ', '')
+df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace('plate', '')
+df_merge_clean.rename(columns={'annotations':'plate_numbers'}, inplace=True)
 
 # write new csv
-df_merge_col.to_csv('new.csv', index=False)
+df_messy.to_csv('messy.csv', index=False)
+df_merge_clean.to_csv('clean.csv', index=False)
