@@ -1,4 +1,4 @@
-# This script uses the pandas python library
+# This script uses the pandas library extensively. I'm using the common shorthand 'pd'
 import pandas as pd
 
 # Read in the classifications and reconciled CSV. Change these file names
@@ -57,9 +57,16 @@ df_merge_col.drop(['subject_id','subject_ids','subject_data'], inplace = True, a
 
 # remove blank rows
 df_merge_col.dropna(axis = 0, how = 'any', inplace = True)
-# seperate messy rows
+
+# extract numerics in to new dataframe
+df_messy_premerge1 = df_merge_col[~df_merge_col['annotations'].str.contains('[A-Za-z]')]
+
+# seperate other messy rows in to new dataframe
 df_merge_clean = df_merge_col[~df_merge_col.annotations.str.contains("\*|\d*\/|kg", na=False)].copy()
-df_messy = df_merge_col[~df_merge_col.apply(tuple,1).isin(df_merge_clean.apply(tuple,1))]
+df_messy_premerge2 = df_merge_col[~df_merge_col.apply(tuple,1).isin(df_merge_clean.apply(tuple,1))]
+
+# concatenate two messy dataframes
+df_messy = pd.concat([df_messy_premerge1, df_messy_premerge2], ignore_index=True)
 
 # cosmetic changes
 df_merge_clean['annotations'] = df_merge_clean['annotations'].apply(lambda s: ', '.join(set(s.split(', '))))
@@ -67,6 +74,6 @@ df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace(' ', '
 df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace('plate', '')
 df_merge_clean.rename(columns={'annotations':'plate_numbers'}, inplace=True)
 
-# write new csv
+# write two csvs
 df_messy.to_csv('messy.csv', index=False)
 df_merge_clean.to_csv('clean.csv', index=False)
