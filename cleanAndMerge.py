@@ -60,6 +60,7 @@ df_merge_col.dropna(axis = 0, how = 'any', inplace = True)
 
 # extract numerics in to new dataframe
 df_messy_premerge1 = df_merge_col[~df_merge_col['annotations'].str.contains('[A-Za-z]')]
+df_merge_col = df_merge_col[~df_merge_col.apply(tuple,1).isin(df_messy_premerge1.apply(tuple,1))]
 
 # seperate other messy rows in to new dataframe
 df_merge_clean = df_merge_col[~df_merge_col.annotations.str.contains("\*|\d*\/|kg", na=False)].copy()
