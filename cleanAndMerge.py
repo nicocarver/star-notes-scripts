@@ -63,7 +63,7 @@ df_messy_premerge1 = df_merge_col[~df_merge_col['annotations'].str.contains('[A-
 df_merge_col = df_merge_col[~df_merge_col.apply(tuple,1).isin(df_messy_premerge1.apply(tuple,1))]
 
 # seperate other messy rows in to new dataframe
-df_merge_clean = df_merge_col[~df_merge_col.annotations.str.contains("\*|\d*\/|kg", na=False)].copy()
+df_merge_clean = df_merge_col[~df_merge_col.annotations.str.contains("\*|\d*\/|kg|jd|ngc|\=|\?", na=False)].copy()
 df_messy_premerge2 = df_merge_col[~df_merge_col.apply(tuple,1).isin(df_merge_clean.apply(tuple,1))]
 
 # concatenate two messy dataframes
@@ -73,6 +73,8 @@ df_messy = pd.concat([df_messy_premerge1, df_messy_premerge2], ignore_index=True
 df_merge_clean['annotations'] = df_merge_clean['annotations'].apply(lambda s: ', '.join(set(s.split(', '))))
 df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace(' ', '')
 df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace('plate', '')
+df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace(r'\\n','', regex=True)
+df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace('^\,','', regex=True)
 df_merge_clean.rename(columns={'annotations':'plate_numbers'}, inplace=True)
 
 # write two csvs
