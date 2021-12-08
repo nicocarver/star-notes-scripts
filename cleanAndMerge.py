@@ -3,10 +3,10 @@ import pandas as pd
 
 # Read in the classifications and reconciled CSV. Change these file names
 class_df = pd.read_csv("star-notes-classifications.csv")
-reconcile_df = pd.read_csv("fleming_1st_month_reconciled_5.31.csv")
+reconcile_df = pd.read_csv("reconciled.csv")
 
 # subset the data based on workflow. Change this to agree with the reconciled file above
-clean_df = class_df.loc[(class_df.workflow_version == 5.31)].copy()
+clean_df = class_df.loc[(class_df.workflow_version == 6.29)].copy()
 
 # Don't change anything below this line
 
@@ -52,8 +52,8 @@ clean_df['page_sequence'] = df_page_sequence
 df_merge_col = pd.merge(clean_df, reconcile_df, left_on='subject_ids', right_on='subject_id')
 df_merge_col = df_merge_col.drop_duplicates()
 
-# delete subject_id and subject_data columns
-df_merge_col.drop(['subject_id','subject_ids','subject_data'], inplace = True, axis = 1)
+# delete subject_ids and subject_data columns, keep subject_id column
+df_merge_col.drop(['subject_ids','subject_data'], inplace = True, axis = 1)
 
 # remove blank rows
 df_merge_col.dropna(axis = 0, how = 'any', inplace = True)
