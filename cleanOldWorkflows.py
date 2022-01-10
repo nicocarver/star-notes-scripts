@@ -53,8 +53,8 @@ clean_df['page_sequence'] = df_page_sequence
 df_merge_col = pd.merge(clean_df, reconcile_df, left_on='subject_ids', right_on='subject_id')
 df_merge_col = df_merge_col.drop_duplicates()
 
-# delete subject_ids and subject_data columns, keep subject_id column
-df_merge_col.drop(['subject_ids','subject_data'], inplace = True, axis = 1)
+# delete subject_data column
+df_merge_col.drop(['subject_data'], inplace = True, axis = 1)
 
 # remove blank rows
 df_merge_col.dropna(axis = 0, how = 'any', inplace = True)
@@ -64,7 +64,7 @@ df_messy_premerge1 = df_merge_col[~df_merge_col['annotations'].str.contains('[A-
 df_merge_col = df_merge_col[~df_merge_col.apply(tuple,1).isin(df_messy_premerge1.apply(tuple,1))]
 
 # seperate other messy rows in to new dataframe
-df_merge_clean = df_merge_col[~df_merge_col.annotations.str.contains("\*|\d*\/|kg|jd|ngc|\=|\?", na=False)].copy()
+df_merge_clean = df_merge_col[~df_merge_col.annotations.str.contains("\*|\d*\/|kg|jd|ngc|\#|\(|\)|\.|\=|\?", na=False)].copy()
 df_messy_premerge2 = df_merge_col[~df_merge_col.apply(tuple,1).isin(df_merge_clean.apply(tuple,1))]
 
 # concatenate two messy dataframes
@@ -77,6 +77,9 @@ df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace('plate
 df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace(r'\\n','', regex=True)
 df_merge_clean['annotations'] = df_merge_clean['annotations'].str.replace('^\,','', regex=True)
 df_merge_clean.rename(columns={'annotations':'plate_numbers'}, inplace=True)
+
+# delete subject_ids column
+df_merge_clean.drop(['subject_ids'], inplace = True, axis = 1)
 
 # write two csvs
 df_messy.to_csv('messy.csv', index=False)
