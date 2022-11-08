@@ -6,7 +6,7 @@ class_df = pd.read_csv("star-notes-classifications.csv")
 reconcile_df = pd.read_csv("reconciled.csv")
 
 # subset the data based on workflow. Change this to agree with the reconciled file above
-clean_df = class_df.loc[(class_df.workflow_id == 12766) & (class_df.workflow_version == 6.29)].copy()
+clean_df = class_df.loc[(class_df.workflow_id == 15050)].copy()
 
 # Don't change anything below this line
 
