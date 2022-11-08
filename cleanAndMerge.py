@@ -6,7 +6,7 @@ class_df = pd.read_csv("star-notes-classifications.csv")
 reconcile_df = pd.read_csv("reconciled.csv")
 
 # subset the data based on workflow. Change this to agree with the reconciled file above
-clean_df = class_df.loc[(class_df.workflow_version == 6.29)].copy()
+clean_df = class_df.loc[(class_df.workflow_id == 16007)].copy()
 
 # Don't change anything below this line
 
@@ -63,7 +63,7 @@ df_messy_premerge1 = df_merge_col[~df_merge_col['annotations'].str.contains('[A-
 df_merge_col = df_merge_col[~df_merge_col.apply(tuple,1).isin(df_messy_premerge1.apply(tuple,1))]
 
 # seperate other messy rows in to new dataframe
-df_merge_clean = df_messy_premerge1[~df_merge_col.annotations.str.contains("\*|\d*\/|kg|jd|ngc|\#|\(|\)|\.|\=|\?", na=False)].copy()
+df_merge_clean = df_merge_col[~df_merge_col.annotations.str.contains("\*|\d*\/|kg|jd|ngc|\#|\(|\)|\.|\=|\?", na=False)].copy()
 df_messy_premerge2 = df_merge_col[~df_merge_col.apply(tuple,1).isin(df_merge_clean.apply(tuple,1))]
 
 # concatenate two messy dataframes
