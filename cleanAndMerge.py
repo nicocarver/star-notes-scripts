@@ -1,12 +1,12 @@
 # This script uses the pandas library extensively. I'm using the common shorthand 'pd'
 import pandas as pd
 
-# Read in the classifications and reconciled CSV. Change these file names
+# Read in the classifications and reconciled CSV.
 class_df = pd.read_csv("star-notes-classifications.csv")
 reconcile_df = pd.read_csv("reconciled.csv")
 
-# subset the data based on workflow. Change this to agree with the reconciled file above
-clean_df = class_df.loc[(class_df.workflow_id == 16007)].copy()
+# subset the data based on workflow. CHANGE this to agree with the reconciled file above
+clean_df = class_df.loc[(class_df.workflow_id == 21227)].copy()
 
 # Don't change anything below this line
 
@@ -82,4 +82,5 @@ df_merge_clean.drop(['subject_ids'], inplace = True, axis = 1)
 
 # write two csvs
 df_messy.to_csv('messy.csv', index=False)
+
 df_merge_clean.to_csv('clean.csv', index=False)

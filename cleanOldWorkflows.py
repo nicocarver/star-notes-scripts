@@ -1,7 +1,7 @@
 # This script uses the pandas python library
 import pandas as pd
 
-# Read in the classifications and reconciled CSV. Change these file names
+# Read in the classifications and reconciled CSV. 
 class_df = pd.read_csv("star-notes-classifications.csv")
 reconcile_df = pd.read_csv("reconciled.csv")
 
